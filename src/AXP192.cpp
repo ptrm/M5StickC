@@ -525,6 +525,29 @@ void AXP192::SetLDO3(bool State)
     Write1Byte( 0x12 , buf );
 }
 
+void AXP192::SetLDOVoltage(uint8_t number, uint16_t voltage)
+{
+    voltage = (voltage > 3300) ? 15 : (voltage / 100) - 18;
+    switch (number)
+    {
+    //uint8_t reg, data;
+    case 2:
+        Write1Byte(0x28, (Read8bit(0x28) & 0X0F) | (voltage << 4));
+        break;
+    case 3:
+        Write1Byte(0x28, (Read8bit(0x28) & 0XF0) | voltage);
+        break;
+    }
+}
+
+void AXP192::SetLcdVoltage(uint16_t voltage)
+{
+    if (voltage >= 2500 && voltage <= 3300)
+    {
+        SetLDOVoltage(2, voltage);
+    }
+}
+
 void AXP192::SetGPIO0(bool State)
 {
     uint8_t buf = Read8bit(0x90);
